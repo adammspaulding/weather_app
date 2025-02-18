@@ -12,3 +12,5 @@ staticfiles/
 
 # Virtual Environment
 venv/
+
+python-ibmdb/
