@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import requests
 import os
 from dotenv import load_dotenv
@@ -14,7 +14,8 @@ def index(request):
     
     if request.method == 'POST':
         form = CityForm(request.POST)
-        form.save()
+        if form.is_valid():
+            form.save()
     
     form = CityForm()
     
@@ -23,18 +24,30 @@ def index(request):
     api_key = os.getenv('API_KEY')
     
     for city in cities:
-            
         city_weather = requests.get(url.format(city, api_key)).json()
         
-        weather = {
-            'city': city,
-            'temperature':city_weather['main']['temp'],
-            'description':city_weather['weather'][0]['description'],
-            'icon':city_weather['weather'][0]['icon']
-        }
-        
-        weather_data.append(weather)
+        if 'main' in city_weather:
+            weather = {
+                'city': city,
+                'temperature': city_weather['main']['temp'],
+                'description': city_weather['weather'][0]['description'],
+                'icon': city_weather['weather'][0]['icon']
+            }
+            weather_data.append(weather)
+        else:
+            # Handle the case where the city is not found or API response is invalid
+            weather = {
+                'city': city,
+                'temperature': 'N/A',
+                'description': 'City not found',
+                'icon': 'N/A'
+            }
+            weather_data.append(weather)
     
-    context = {'weather_data':weather_data, 'form':form}
+    context = {'weather_data': weather_data, 'form': form}
     
     return render(request, 'weather/index.html', context)
+
+def delete_city(request, city_id):
+    City.objects.get(id=city_id).delete()
+    return redirect('index')
