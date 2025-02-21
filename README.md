@@ -1,6 +1,6 @@
 # Weather App
 
-A Django application that reports the weather using the OpenWeatherMap API. Users can type in a city to see the current weather conditions.
+A Django application that reports the weather using the OpenWeatherMap API. Users can type in a city to see the current weather conditions. This is still a work in progress.
 
 ## Features
 
